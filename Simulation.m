@@ -6,29 +6,36 @@ L = 100;
 Xa = floor((W+1)/2);
 Ya = floor((L+1)/2);
 
-N_steps = 10;
-N_pedestrians = 20;
+N_steps = 5;
+N_pedestrians = 10;
 
 for i=1:N_pedestrians
     pedestrian_array(i) = Pedestrian(W,L);
 end
 
+% matrix of position of pedestrians at all times steps
+history=zeros(N_steps, N_pedestrians, 3);
+
 prob=zeros(W,L);
 
-figure, clf,
-hold on, grid on
-axis([0,W, 0, L]);
+%figure, clf,
+%hold on, grid on
+%axis([0,W, 0, L]);
 
-for i=1:N_steps 
-    pause(0.01)
-    clf,
-    hold on, grid on
-    axis([0,W, 0, L]);
-    plot(Xa, Ya, 'X')
+for i=1:N_steps
+    fprintf('\nStep %i', i);
+    %pause(0.01)
+    %clf,
+    %hold on, grid on
+    %axis([0,W, 0, L]);
+    %plot(Xa, Ya, 'X')
     for j=1:N_pedestrians
         %plot(pedestrian_array(j).x, pedestrian_array(j).y, 'o')
-        viscircles([pedestrian_array(j).x, pedestrian_array(j).y], pedestrian_array(j).r)
+        %viscircles([pedestrian_array(j).x, pedestrian_array(j).y], pedestrian_array(j).r)
         pedestrian_array(j).Walk();
+        history(i,j,1) = pedestrian_array(j).x;
+        history(i,j,2) = pedestrian_array(j).y;
+        history(i,j,3) = pedestrian_array(j).r;
     end
     for k=1:W
         for h=1:L
@@ -46,6 +53,8 @@ for i=1:N_steps
         end
     end
 end
+
+PlotHistory(history, W, L, N_steps, N_pedestrians);
 
 prob = prob/N_steps;
 
