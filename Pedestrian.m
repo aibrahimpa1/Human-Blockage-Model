@@ -30,22 +30,21 @@ classdef Pedestrian < handle
             X = obj.x + dx;
             Y = obj.y + dy;
             
-            if X<0
-                X=-X;
-            else
-                if X>obj.w
-                    X=obj.w-(X-obj.w);
-                end
+            % check if pedestrian goes out of the left or right border
+            if (X<1)
+                X=obj.w;
             end
-
-            if Y<0
-                Y=-Y;
-            else 
-                if Y>obj.l
-                    Y=obj.l-(Y-obj.l);
-                end 
+            if(X>obj.w)
+                X=1;
             end
-            
+            % check if pedestrian goes out of upper and lower border
+            if(Y<1)
+                Y=obj.l;
+            end
+            if(Y>obj.l)
+                Y=1;
+            end
+            % update pedestrian position
             obj.x = X;
             obj.y = Y;
         end

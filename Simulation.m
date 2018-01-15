@@ -6,8 +6,8 @@ L = 100;
 Xa = floor((W+1)/2);
 Ya = floor((L+1)/2);
 
-N_steps = 100;
-N_pedestrians = 10;
+N_steps = 10;
+N_pedestrians = 20;
 
 for i=1:N_pedestrians
     pedestrian_array(i) = Pedestrian(W,L);
