@@ -6,7 +6,7 @@ L = 100;
 Xa = floor((W+1)/2);
 Ya = floor((L+1)/2);
 
-N_steps = 5;
+N_steps = 20;
 N_pedestrians = 10;
 
 for i=1:N_pedestrians

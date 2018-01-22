@@ -16,7 +16,17 @@ function [ blocked ] = BlockCheck2D(Xa, Ya, Xp, Yp, Xr, Yr, dr)
         Ymax=Yr;
     end
       
-    if Xmin < Xp && Xp < Xmax && Ymin < Yp && Yp < Ymax
+    if Xmax-Xmin<dr 
+        Xmin=Xmin-dr;
+        Xmax=Xmax+dr;
+    end
+    
+    if Ymax-Ymin<dr
+        Ymin=Ymin-dr;
+        Ymax=Ymax+dr;
+    end
+    
+    if Xmin <= Xp && Xp <= Xmax && Ymin <= Yp && Yp <= Ymax
         RP = [Xp - Xr; Yp - Yr];
         RT = [Xa - Xr; Ya - Yr];
         a1 = (RP' * RT) / norm(RT);
