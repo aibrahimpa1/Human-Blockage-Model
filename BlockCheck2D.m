@@ -1,19 +1,27 @@
-function [ blocked ] = BlockCheck2D(Xa, Ya, Xp, Yp, Xr, Yr, dr)
+function [ blocked ] = BlockCheck2D(antenna, pedestrian, device)
 
-    if Xr < Xa
-        Xmin=Xr;
+    Xa = antenna.xa;
+    Ya = antenna.ya;
+    Xp = pedestrian.x;
+    Yp = pedestrian.y;
+    Xd = device.xd;
+    Yd = device.yd;
+    dr = pedestrian.r;
+
+    if Xd < Xa
+        Xmin=Xd;
         Xmax=Xa;
     else
         Xmin=Xa;
-        Xmax=Xr;
+        Xmax=Xd;
     end
 
-    if Yr < Ya
-        Ymin=Yr;
+    if Yd < Ya
+        Ymin=Yd;
         Ymax=Ya;
     else
         Ymin=Ya;
-        Ymax=Yr;
+        Ymax=Yd;
     end
       
     if Xmax-Xmin<dr 
@@ -27,10 +35,10 @@ function [ blocked ] = BlockCheck2D(Xa, Ya, Xp, Yp, Xr, Yr, dr)
     end
     
     if Xmin <= Xp && Xp <= Xmax && Ymin <= Yp && Yp <= Ymax
-        RP = [Xp - Xr; Yp - Yr];
-        RT = [Xa - Xr; Ya - Yr];
-        a1 = (RP' * RT) / norm(RT);
-        dp = sqrt(norm(RP)^2 - a1^2);
+        DP = [Xp - Xd; Yp - Yd];
+        DA = [Xa - Xd; Ya - Yd];
+        a1 = (DP' * DA) / norm(DA);
+        dp = sqrt(norm(DP)^2 - a1^2);
         if dr<=dp
             blocked=false;
         else

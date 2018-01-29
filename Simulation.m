@@ -1,14 +1,30 @@
 clear, close all
 
-W = 100;
-L = 100;
+% dimensions of surface
+W = 200;
+L = 200;
 
+% parameters of antenna
 Xa = floor((W+1)/2);
 Ya = floor((L+1)/2);
+Ha = 200;
 
-N_steps = 20;
+% height of device
+Hd = 150;
+
+% Number of time steps
+N_steps = 50;
+
+% Number of pedestrians
 N_pedestrians = 10;
 
+% create antenna object
+antenna = Antenna(Xa, Ya, Ha);
+
+% create device object and put it in lower left corner (1, 1) 
+device = Device(1, 1, Hd);
+
+% create pedestrian objects
 for i=1:N_pedestrians
     pedestrian_array(i) = Pedestrian(W,L);
 end
@@ -18,20 +34,9 @@ history=zeros(N_steps, N_pedestrians, 3);
 
 prob=zeros(W,L);
 
-%figure, clf,
-%hold on, grid on
-%axis([0,W, 0, L]);
-
 for i=1:N_steps
     fprintf('\nStep %i', i);
-    %pause(0.01)
-    %clf,
-    %hold on, grid on
-    %axis([0,W, 0, L]);
-    %plot(Xa, Ya, 'X')
     for j=1:N_pedestrians
-        %plot(pedestrian_array(j).x, pedestrian_array(j).y, 'o')
-        %viscircles([pedestrian_array(j).x, pedestrian_array(j).y], pedestrian_array(j).r)
         pedestrian_array(j).Walk();
         history(i,j,1) = pedestrian_array(j).x;
         history(i,j,2) = pedestrian_array(j).y;
@@ -40,11 +45,10 @@ for i=1:N_steps
     for k=1:W
         for h=1:L
             for index=1:N_pedestrians
-                Xp = pedestrian_array(index).x;
-                Yp = pedestrian_array(index).y;
-                Xr = k;
-                Yr = h;
-                blocked = BlockCheck2D(Xa, Ya, Xp, Yp, Xr, Yr, pedestrian_array(index).r);
+                pedestrian = pedestrian_array(index);
+                device.xd = k;
+                device.yd = h;
+                blocked = BlockCheck3D(antenna, pedestrian, device);
                 if(blocked==true)
                     prob(k,h) = prob(k,h) + 1;
                     break;
@@ -54,10 +58,13 @@ for i=1:N_steps
     end
 end
 
+% Plot movement of pedestrians
 PlotHistory(history, W, L, N_steps, N_pedestrians);
 
+% Nomralize the probablity
 prob = prob/N_steps;
 
+% Plot the probablity distribution
 figure, clf
 [X, Y] = meshgrid(1:W,1:L);
 h = surf(X, Y, prob);
