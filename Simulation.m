@@ -1,16 +1,16 @@
 clear, close all
 
 % dimensions of surface
-W = 200;
-L = 200;
+W = 100;
+L = 100;
 
 % parameters of antenna
 Xa = floor((W+1)/2);
 Ya = floor((L+1)/2);
-Ha = 200;
+Ha = 3;
 
 % height of device
-Hd = 150;
+Hd = 1.5;
 
 % Number of time steps
 N_steps = 50;
@@ -61,7 +61,7 @@ end
 % Plot movement of pedestrians
 PlotHistory(history, W, L, N_steps, N_pedestrians);
 
-% Nomralize the probablity
+% Normalize the probablity
 prob = prob/N_steps;
 
 % Plot the probablity distribution
@@ -69,3 +69,18 @@ figure, clf
 [X, Y] = meshgrid(1:W,1:L);
 h = surf(X, Y, prob);
 set(h,'LineStyle','none')
+
+% Transform the probablity distribution
+[distances, distprob] = ProbXY2R(antenna, prob, W, L);
+
+% Calculate attenuation
+Attenuation = 1 - distprob;
+
+% Log of attentuation for estimating alpha
+LogAtt = log(Attenuation);
+
+% Estimating alpha
+alpha = polyfit(distances, LogAtt, 1);
+
+% Estimating Attenuation using the estimated alpha value
+AttEstimate = exp(alpha(2)*distances);

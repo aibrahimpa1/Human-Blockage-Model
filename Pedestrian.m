@@ -8,12 +8,12 @@ classdef Pedestrian < handle
         function obj = Pedestrian(W, L)
             obj.w = W;
             obj.l = L;
-            obj.x = RandomIn(1,W);
-            obj.y = RandomIn(1,L);
-            obj.h = normrnd(170,10);
-            obj.r = normrnd(3,0.5);
-            obj.vx = RandomIn(-5, 5);
-            obj.vy = RandomIn(-5, 5);
+            obj.x = RandomIn(1, W);
+            obj.y = RandomIn(1, L);
+            obj.h = normrnd(1.70, 0.10);
+            obj.r = normrnd(1.0, 0.1);
+            obj.vx = RandomIn(-2, 2);
+            obj.vy = RandomIn(-2, 2);
         end
         
         % Walk Method
