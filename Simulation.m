@@ -4,65 +4,25 @@ clear, close all
 W = 100;
 L = 100;
 
+% Number of pedestrians
+N_pedestrians = [10,20,50];
+
+% Number of time steps
+N_steps = 10;
+
 % parameters of antenna
 Xa = floor((W+1)/2);
 Ya = floor((L+1)/2);
 Ha = 3;
 
-% height of device
-Hd = 1.5;
-
-% Number of time steps
-N_steps = 50;
-
-% Number of pedestrians
-N_pedestrians = 10;
-
 % create antenna object
 antenna = Antenna(Xa, Ya, Ha);
 
-% create device object and put it in lower left corner (1, 1) 
-device = Device(1, 1, Hd);
+[prob, history] = Motion_simulation(W,L,N_pedestrians(1), N_steps, antenna);
 
-% create pedestrian objects
-for i=1:N_pedestrians
-    pedestrian_array(i) = Pedestrian(W,L);
-end
-
-% matrix of position of pedestrians at all times steps
-history=zeros(N_steps, N_pedestrians, 3);
-
-prob=zeros(W,L);
-
-for i=1:N_steps
-    fprintf('\nStep %i', i);
-    for j=1:N_pedestrians
-        pedestrian_array(j).Walk();
-        history(i,j,1) = pedestrian_array(j).x;
-        history(i,j,2) = pedestrian_array(j).y;
-        history(i,j,3) = pedestrian_array(j).r;
-    end
-    for k=1:W
-        for h=1:L
-            for index=1:N_pedestrians
-                pedestrian = pedestrian_array(index);
-                device.xd = k;
-                device.yd = h;
-                blocked = BlockCheck3D(antenna, pedestrian, device);
-                if(blocked==true)
-                    prob(k,h) = prob(k,h) + 1;
-                    break;
-                end
-            end
-        end
-    end
-end
 
 % Plot movement of pedestrians
 PlotHistory(history, W, L, N_steps, N_pedestrians);
-
-% Normalize the probablity
-prob = prob/N_steps;
 
 % Plot the probablity distribution
 figure, clf
@@ -80,7 +40,14 @@ Attenuation = 1 - distprob;
 LogAtt = log(Attenuation);
 
 % Estimating alpha
-alpha = polyfit(distances, LogAtt, 1);
+%alpha = polyfit(distances, LogAtt, 1);
+alpha = (distances.')\(LogAtt.');
 
 % Estimating Attenuation using the estimated alpha value
-AttEstimate = exp(alpha(2)*distances);
+AttEstimate = exp(alpha*distances);
+
+figure, clf
+plot(distances, AttEstimate)
+grid on
+xlabel('Distance to Antenna')
+ylabel('Attenuation')
