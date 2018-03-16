@@ -1,14 +1,14 @@
 clear, close all
 
 % dimensions of surface
-W = 100;
-L = 100;
+W = 200;
+L = 200;
 
 % Number of pedestrians
 N_pedestrians = [10,20,50];
 
 % Number of time steps
-N_steps = 10;
+N_steps = 20;
 
 % parameters of antenna
 Xa = floor((W+1)/2);

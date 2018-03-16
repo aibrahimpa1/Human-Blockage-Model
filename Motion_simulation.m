@@ -19,7 +19,24 @@ prob=zeros(W,L);
 for i=1:N_steps
     fprintf('\nStep %i', i);
     for j=1:N_pedestrians
-        pedestrian_array(j).Walk();
+        %check for collision with previously moved pedestrians
+        condition = true;
+        while condition
+            pedestrian_array(j).Walk();
+            condition = false;
+            for k=1:j-1    
+                x1 = pedestrian_array(j).x;
+                y1 = pedestrian_array(j).y;
+                r1 = pedestrian_array(j).r;
+                x2 = pedestrian_array(k).x;
+                y2 = pedestrian_array(k).y;
+                r2 = pedestrian_array(k).r;
+
+               if norm([x1-x2, y1-y2]) < r1+r2
+                    condition = true;
+               end
+            end
+        end
         history(i,j,1) = pedestrian_array(j).x;
         history(i,j,2) = pedestrian_array(j).y;
         history(i,j,3) = pedestrian_array(j).r;

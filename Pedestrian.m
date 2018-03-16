@@ -1,6 +1,6 @@
 classdef Pedestrian < handle
     properties
-        x, y, h, r, w, l, vx, vy;
+        x, y, x_old, y_old, h, r, w, l, vx, vy;
     end
     methods
         % Constructor
@@ -10,6 +10,8 @@ classdef Pedestrian < handle
             obj.l = L;
             obj.x = RandomIn(1, W);
             obj.y = RandomIn(1, L);
+            obj.x_old = obj.x;
+            obj.y_old = obj.y;
             obj.h = normrnd(1.70, 0.10);
             obj.r = normrnd(1.0, 0.1);
             obj.vx = RandomIn(-2, 2);
@@ -40,7 +42,10 @@ classdef Pedestrian < handle
             if(Y>obj.l)
                 Y=1;
             end
+            
             % update pedestrian position
+            obj.x_old = obj.x;
+            obj.y_old = obj.y;
             obj.x = X;
             obj.y = Y;
             % update pedestrian velocity
@@ -49,5 +54,19 @@ classdef Pedestrian < handle
             obj.vx = obj.vx + dvx;
             obj.vy = obj.vy + dvy;
         end
+        
+        % GoBack Method
+        % Moves back the pedestrian to his previous location
+        % and gives him a random velocity
+        function obj = GoBack(obj)
+            % compute new position
+            obj.x = obj.x_old;
+            obj.y = obj.y_old;
+            % update pedestrian velocity
+            dvx = RandomIn(-2, 2);
+            dvy = RandomIn(-2, 2);
+            obj.vx = obj.vx + dvx;
+            obj.vy = obj.vy + dvy;
+        end 
     end
 end
