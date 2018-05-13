@@ -14,11 +14,7 @@ end
 % matrix of position of pedestrians at all times steps
 history = zeros(N_steps, N_pedestrians, 3);
 
-prob = zeros(W,L);
-
-for k = 1:length(antenna)
-    probability{k} = prob;
-end
+probability = zeros(W,L);
 
 for i=1:N_steps
     fprintf('\nStep %i', i);
@@ -48,15 +44,13 @@ for i=1:N_steps
     for k=1:W
         for h=1:L
             for index=1:N_pedestrians
-                for ant=1:length(antenna)
-                    pedestrian = pedestrian_array(index);
-                    device.xd = k;
-                    device.yd = h;
-                    blocked = BlockCheck3D(antenna(ant), pedestrian, device);
-                    if(blocked==true)
-                        probability{ant}(k,h) = probability{ant}(k,h) + 1/N_steps;
-                        break;
-                    end
+                pedestrian = pedestrian_array(index);
+                device.xd = k;
+                device.yd = h;
+                blocked = BlockCheck3D(antenna, pedestrian, device);
+                if(blocked==true)
+                    probability(k,h) = probability(k,h) + 1/N_steps;
+                    break;
                 end
             end
         end

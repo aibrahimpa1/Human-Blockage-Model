@@ -8,7 +8,7 @@ L = 200;
 N_pedestrians = [10,20,50];
 
 % Number of time steps
-N_steps = 30;
+N_steps = 200;
 
 % parameters of antennas
 Xa = [0, W-1, W-1, 0  ];
@@ -20,25 +20,36 @@ Ha = 3;
 for i=1:4
     antenna(i)= Antenna(Xa(i), Ya(i), Ha);
 end
-Probabilities = {};
+
+ProbabilitiesXY = {};
+ProbabilitiesR = {};
 Histories = {};
 
 for i=1:3 % i is the index for the case: low, average, high (crowded)
-    [Probabilities{i}, Histories{i}] = Motion_simulation(W,L,N_pedestrians(i), N_steps, antenna);
+    [ProbabilitiesXY{i}{1}, Histories{i}] = Motion_simulation(W,L,N_pedestrians(i), N_steps, antenna(1));
 
     % Plot movement of pedestrians
-    PlotHistory(Histories{i}, W, L, N_steps, N_pedestrians(i));
+    %PlotHistory(Histories{i}, W, L, N_steps, N_pedestrians(i));
 
-    for j=1:length(Probabilities{i})
-        % Transform the probablity distribution
-        [distances, distprob{j}] = ProbXY2R(antenna(1), Probabilities{i}{j}, W, L);
+    % Compute blockage probability for other antennas
+    for j=2:length(antenna)
+        if (Xa(j) ~= Xa(1)) & (Ya(j) ~= Ya(1))
+            ProbabilitiesXY{i}{j} = flip(flip(ProbabilitiesXY{i}{1}, 1), 2);
+        else if (Xa(j) ~= Xa(1)) 
+            ProbabilitiesXY{i}{j} = flip(ProbabilitiesXY{i}{1}, 1);
+        else (Ya(j) ~= Ya(1))
+            ProbabilitiesXY{i}{j} = flip(ProbabilitiesXY{i}{1}, 2);
+            end 
+     end
     end
-        
+    % Transform the probablity distribution
+    for k=1:length(antenna)
+        [distances, ProbabilitiesR{k}] = ProbXY2R(antenna(1), ProbabilitiesXY{i}{k}, W, L);
+    end
+    
     % Calculate attenuation
     Attenuation = 1.0;
-    for j=1:length(Probabilities{i})
-        Attenuation = Attenuation .* distprob{i};  
-    end
+    Attenuation = Attenuation .* ProbabilitiesR{1};
        
     Attenuation = abs(1 - Attenuation);
 
@@ -54,13 +65,13 @@ end
 figure, clf
 subplot(2,2,1)
 [X, Y] = meshgrid(1:W,1:L);
-h = surf(X, Y, Probabilities{1}{1} * Probabilities{1}{2} * Probabilities{1}{3} * Probabilities{1}{4});
+h = surf(X, Y, ProbabilitiesXY{1}{1} .* ProbabilitiesXY{1}{2} .* ProbabilitiesXY{1}{3} .* ProbabilitiesXY{1}{4});
 set(h,'LineStyle','none')
 subplot(2,2,2)
-h = surf(X, Y, Probabilities{2}{1} * Probabilities{2}{2} * Probabilities{2}{3} * Probabilities{2}{4});
+h = surf(X, Y, ProbabilitiesXY{2}{1} .* ProbabilitiesXY{2}{2} .* ProbabilitiesXY{2}{3} .* ProbabilitiesXY{2}{4});
 set(h,'LineStyle','none')
 subplot(2,2,3)
-h = surf(X, Y, Probabilities{3}{1} * Probabilities{3}{2} * Probabilities{3}{3} * Probabilities{3}{4});
+h = surf(X, Y, ProbabilitiesXY{3}{1} .* ProbabilitiesXY{3}{2} .* ProbabilitiesXY{3}{3} .* ProbabilitiesXY{3}{4});
 set(h,'LineStyle','none')
 
 % Estimating Attenuation using the estimated alpha value
